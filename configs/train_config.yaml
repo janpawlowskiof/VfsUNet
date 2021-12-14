@@ -1,0 +1,41 @@
+train:
+  steps: 100000
+  save_dir: "training_save_dir"
+  project_name: "vfs_unet_katana"
+  val_check_interval: 3000
+  bitrate: "katana-qp=32"
+load_model: "jan-pawlowski/vfs_unet_katana/model-katana-qp-37-vfs_net-111qsfa3:v12"
+loss_alpha: 0.84
+relu:
+  name: LeakyReLU
+  slope: 1.0e-3
+optimizer_generator:
+  name: "Adam"
+  lr: 1.0e-3
+train_dataset:
+  name: "CompressionDataset"
+  raw_directory: "/mnt/nfs_svtai08-nvme1n1p1/katana_zero/train/raw_split_png"
+  compressed_directory: "/mnt/nfs_svtai08-nvme1n1p1/katana_zero/train/ai_hevc_qp=32_split_png"
+  deblocked_directory: "/mnt/nfs_svtai08-nvme1n1p1/katana_zero/train/ai_hevc_deblocked_qp=32_split_png"
+  batch_size: 2
+  num_workers: 8
+  prefetch_factor: 4
+  shuffle: True
+  transformations:
+    - totensor
+    - normalize
+valid_dataset:
+  name: "CompressionDataset"
+  raw_directory: "/mnt/nfs_svtai08-nvme1n1p1/katana_zero/valid/raw_split_png"
+  compressed_directory: "/mnt/nfs_svtai08-nvme1n1p1/katana_zero/valid/ai_hevc_qp=32_split_png"
+  deblocked_directory: "/mnt/nfs_svtai08-nvme1n1p1/katana_zero/valid/ai_hevc_deblocked_qp=32_split_png"
+  batch_size: 8
+  num_workers: 8
+  prefetch_factor: 1
+  shuffle: False
+  transformations:
+    - totensor
+    - normalize
+ray:
+  num_workers: 4
+  num_cpus_per_worker: 8

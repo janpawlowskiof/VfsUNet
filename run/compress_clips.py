@@ -35,10 +35,10 @@ if __name__ == "__main__":
     paths = [
         # Path("/mnt/nfs_svtai10-nvme1n1p1/jpawlowski/gta_v/train"),
         # Path("/mnt/nfs_svtai10-nvme1n1p1/jpawlowski/gta_v/valid")
-        Path("/mnt/nfs_svtai08-nvme1n1p1/katana_zero/valid/"),
-        Path("/mnt/nfs_svtai08-nvme1n1p1/katana_zero/train/"),
-        Path("/mnt/nfs_svtai09-nvme1n1p1/jpawlowski/trackmania/valid"),
-        Path("/mnt/nfs_svtai09-nvme1n1p1/jpawlowski/trackmania/train"),
+        Path("/mnt/nfs_svtai10-nvme1n1p1/jpawlowski/tf2/valid/"),
+        Path("/mnt/nfs_svtai10-nvme1n1p1/jpawlowski/tf2/train/"),
+        # Path("/mnt/nfs_svtai09-nvme1n1p1/jpawlowski/trackmania/valid"),
+        # Path("/mnt/nfs_svtai09-nvme1n1p1/jpawlowski/trackmania/train"),
     ]
 
     remotes = []

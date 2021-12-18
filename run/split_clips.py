@@ -120,6 +120,42 @@ def split_trackmania():
     ray.get(remotes)
 
 
+def split_tf2():
+    ray.init()
+
+    paths = [
+        # Path("/mnt/nfs_svtai10-nvme1n1p1/jpawlowski/tf2/train"),
+        Path("/mnt/nfs_svtai10-nvme1n1p1/jpawlowski/tf2/valid")
+    ]
+
+    folders = [
+        "raw",
+        "ai_hevc_qp=32",
+        "ai_hevc_qp=35",
+        "ai_hevc_qp=37",
+        "ai_hevc_qp=37",
+        "ai_hevc_qp=39",
+        "ai_hevc_deblocked_qp=32",
+        "ai_hevc_deblocked_qp=35",
+        "ai_hevc_deblocked_qp=37",
+        "ai_hevc_deblocked_qp=39",
+    ]
+
+    remote_split_clips = ray.remote(split_clip)
+    remotes = []
+    for path in paths:
+        for folder in folders:
+            input_path = path / folder
+            output_path = path / (folder + "_split_png")
+            for mp4_path in glob.glob(f"{input_path}/*.mp4"):
+                mp4_path = Path(mp4_path)
+                split_path = output_path / mp4_path.stem
+                split_path.mkdir(exist_ok=True, parents=True)
+                print(split_path)
+                remotes.append(remote_split_clips.remote(mp4_path, split_path))
+    ray.get(remotes)
+
+
 # def split_clips_in_directory(clips_path, split_path):
 #     pqdm(glob.glob(f"{clips_path}/*.mp4"), partial(split_clip, split_path=split_path), n_jobs=16)
 
@@ -134,6 +170,7 @@ def split_clip(mp4_path, split_path):
 
 
 if __name__ == "__main__":
+    split_tf2()
     # split_trackmania()
-    split_katana()
+    # split_katana()
     # split_gta_remote()

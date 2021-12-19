@@ -1,9 +1,10 @@
+import argparse
+
 import ray
 import glob
 from pathlib import Path
 
 from src.dataset.mp4_clip import Mp4Clip
-from src.ray import initialize_ray
 
 
 def get_compress_clips_in_path_remotes(path: Path, bitrate: str, deblock: bool):
@@ -29,17 +30,17 @@ def change_bitrate(clip, bitrate, output_path, deblocking):
 
 
 if __name__ == "__main__":
-    initialize_ray()
-    # ray.init()
+    ray.init()
 
-    paths = [
-        # Path("/mnt/nfs_svtai10-nvme1n1p1/jpawlowski/gta_v/train"),
-        # Path("/mnt/nfs_svtai10-nvme1n1p1/jpawlowski/gta_v/valid")
-        Path("/mnt/nfs_svtai10-nvme1n1p1/jpawlowski/tf2/valid/"),
-        Path("/mnt/nfs_svtai10-nvme1n1p1/jpawlowski/tf2/train/"),
-        # Path("/mnt/nfs_svtai09-nvme1n1p1/jpawlowski/trackmania/valid"),
-        # Path("/mnt/nfs_svtai09-nvme1n1p1/jpawlowski/trackmania/train"),
-    ]
+    parser = argparse.ArgumentParser(
+        description='Arg parsing for compressing clips',
+    )
+
+    parser.add_argument('--paths', nargs='+', help='Folders in root directory that will be split', required=True)
+    args = parser.parse_args()
+
+    paths = [Path(path) for path in args.paths]
+    print(f"splitting clips in directories: {paths}")
 
     remotes = []
     for path in paths:

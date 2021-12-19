@@ -1,10 +1,10 @@
 train:
   steps: 100000
   save_dir: "training_save_dir"
-  project_name: "vfs_unet_tf2"
+  project_name: "wandb project name"
   val_check_interval: 3000
   bitrate: "tf2-qp=32"
-#load_model: "jan-pawlowski/vfs_unet_katana/model-katana-qp-37-vfs_net-111qsfa3:v12"
+#load_model: "wandb model version"
 loss_alpha: 0.84
 relu:
   name: LeakyReLU
@@ -36,6 +36,6 @@ valid_dataset:
   transformations:
     - totensor
     - normalize
-ray:
-  num_workers: 4
-  num_cpus_per_worker: 8
+#ray:
+#  num_workers: 4
+#  num_cpus_per_worker: 8

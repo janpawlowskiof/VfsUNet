@@ -3,12 +3,10 @@ from collections import namedtuple
 from typing import Callable
 
 import cv2
-import ffmpeg
 from pathlib import Path
 
 import torch
 from PIL import Image
-from torchmetrics.functional import psnr
 from tqdm import tqdm
 
 from src.dataset.util.png_frame_saver import PngFrameSaver
@@ -26,11 +24,6 @@ class Mp4Clip:
             save_path = self._get_clip_path(output_path, index)
             frame_saver.save_frame(frame, save_path)
 
-    def split_ffmpeg(self, output_path: Path):
-        output_file_pattern = output_path / "%06d.png"
-        print(f"output pattern is: {output_file_pattern.absolute()}")
-        subprocess.run(['ffmpeg', "-y", "-i", str(self.path.absolute()), str(output_file_pattern.absolute())])
-
     def change_bitrate(self, bitrate, output_path: Path, skip_if_exists=True, deblocking=False, intra=True):
         output_path = output_path.with_suffix(".mp4")
 
@@ -46,23 +39,9 @@ class Mp4Clip:
 
         subprocess.run(
             ['ffmpeg', "-y", "-i", str(self.path.absolute()), "-c:v", "libx265", "-f", "mp4", "-x265-params", x265_params, str(output_path.absolute())]
-            # ['ffmpeg', "-y", "-i", str(self.path.absolute()), "-c:v", "libx265", "-b:v", bitrate, "-f", "mp4", "-x265-params", x265_params, str(output_path.absolute())]
         )
 
         return Mp4Clip(output_path)
-
-    # def compress_intra(self, output_path: Path):
-    #     output_path.parent.mkdir(exist_ok=True, parents=True)
-    #     ffmpeg_args = {'c:v': 'libx265', 'f': 'mp4', "deblock": "false"}
-    #
-    #     ffmpeg \
-    #         .input(str(self.path)) \
-    #         .output(str(output_path), **ffmpeg_args) \
-    #          \
-    #         .overwrite_output() \
-    #         .run()
-    #
-    #     return Mp4Clip(output_path)
 
     def remove_spaces(self):
         new_name = self.path.name.replace(" ", "")
@@ -87,7 +66,8 @@ class Mp4Clip:
         for frame in self.as_numpy_arrays():
             yield Image.fromarray(frame)
 
-    def _get_clip_path(self, output_path: Path, index: int) -> Path:
+    @staticmethod
+    def _get_clip_path(output_path: Path, index: int) -> Path:
         return output_path / f"{index:06}"
 
     def generate_residue(self, blocky_clip: "Mp4Clip", deblocked_clip: "Mp4Clip", model, transforms, func: Callable[[ProcessedImages], None], residue_multiplier=3):
@@ -108,7 +88,8 @@ class Mp4Clip:
                 raw_image = StreamingTransformations.unnormalize(raw_frame) * 255.0
 
                 processed_images = ProcessedImages(
-                    raw_image=raw_image, final_image=prediction, blocky_image=blocky_frame, deblocked_image=deblocked_frame, true_residue=true_residue, decoded_residue=predicted_residue
+                    raw_image=raw_image, final_image=prediction, blocky_image=blocky_frame, deblocked_image=deblocked_frame, true_residue=true_residue,
+                    decoded_residue=predicted_residue
                 )
                 func(processed_images)
 

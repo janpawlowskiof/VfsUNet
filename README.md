@@ -42,9 +42,35 @@ for example:
 python -m run.reconstruct --model=trained_models/tf2-qp39 --qp=39 --clip=example_data/raw/example_clip.mp4 --output=reconstuction_output
 ```
 
+### Compressing clips in directory
+You must provide path to folder, which contains folder named `raw` containing high quality `.mp4` clips
+```shell
+python -m run.compress_clips --paths <path to folder nr 1> <path to folder nr 2> ...
+```
+for example:
+```shell
+python -m run.compress_clips --paths example_data
+```
+
+
+### Splitting clips into images
+You must provide path to root directory and folders containing clips that you want to split
+```shell
+python -m run.split_clips --root <path to root folder> --folder <folder nr 1> <foldre nr 2> ...
+```
+for example:
+```shell
+python -m run.split_clips --root example_data --folder raw
+```
+
+
 ### Performing training
 Training settings are configured in file `configs/train_config.yaml`
 It is required to be logged in to `wandb`.
 ```shell
 python -m run.train
 ```
+
+### Calculating metrics and exporting plots
+Metrics are calculated and plotted in folder `notebooks`
+in form of jupyter notebooks
